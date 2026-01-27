@@ -3,7 +3,7 @@
 **Forward authentication** (**forward auth**) is a method where a **reverse proxy** (~~like Traefik, Caddy,~~ NGINX) intercepts requests to an application and **forwards** them to an ~~external~~ authentication service (~~like Authentik or Auth0~~) for validation, allowing the proxy to **secure apps without built-in login features** by **adding headers** with **user details** if access is granted.
 - If the **auth service** returns a successful response (2xx), the proxy lets the request through; otherwise, it sends the user to a **login page** or returns an error, **centralizing authentication logic** outside the application itself.
 
-<img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/e1da1f83-5673-408d-b92c-2ea1d9cff65f" />
+<img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/3aa5bf6a-c4c6-4feb-b3e5-7aa4615a579f" />
 
 - **NGINX Ingress** intercepts all requests and makes internal subrequests to **OAuth2 Proxy** (`/oauth2/auth`) before routing to apps.
 - **OAuth2 Proxy** validates **session cookies**;
@@ -44,6 +44,10 @@ https://github.com/dexidp/dex/blob/master/connector/microsoft/microsoft.go
 - An [**ingress controller**](https://ngrok.com/blog/ingress-controller-vs-api-gateway) is a Kubernetes-native component designed to seamlessly route HTTP/HTTPS and other TCP traffic from the outside world (also known as north-south traffic) to the correct backend service running inside the Kubernetes cluster. Since external components lack the context to determine which pod or container should handle a request, an internal component—the ingress controller—is necessary. Essentially, an ingress controller translates Ingress resources into routing rules that reverse proxies can recognize and implement.
 
 <img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/3aa5bf6a-c4c6-4feb-b3e5-7aa4615a579f" />
+
+
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/a08b54f0-b363-422a-b66c-44e5bafe2463" />
+
 
 - **CRD**: A custom plugin. It lets you add new types of "stuff" to Kubernetes that it didn't have before. A way to teach Kubernetes new tricks. It lets you create your own custom objects (like a DexClient) that K8s doesn't know by default. 
   
