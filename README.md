@@ -9,7 +9,7 @@ This project runs on a small self-hosted Kubernetes cluster:
     - **Control plane** (master): `10.0.0.50`
     - **Worker node**: `10.0.0.221`
 
-- **Cloudflare Tunnel**: Provides a secure external endpoint and forwards all incoming traffic to a single internal service — the **NGINX Ingress Controller**. Cloudflare Tunnel (cloudflared): Acts as a secure, outbound-only connection from our cluster to Cloudflare, exposing internal services without opening firewall ports, often running as a DaemonSet or Deployment.
+- **Cloudflare Tunnel**: Provides a secure external endpoint and forwards all incoming traffic to a single internal service — the **NGINX Ingress Controller** at `http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80`. Cloudflare Tunnel (cloudflared): Acts as a secure, outbound-only connection from our cluster to Cloudflare, exposing internal services without opening firewall ports, often running as a DaemonSet or Deployment.
 
 - **NGINX Ingress Controller**: Acts as the single entry point for HTTP(S) traffic, routing requests by path to the appropriate backend services. Manages external access, load balancing, and SSL termination within the cluster, routing traffic based on host/path. Requests can only reach applications through NGINX, and NGINX only injects identity headers after authentication.
 
