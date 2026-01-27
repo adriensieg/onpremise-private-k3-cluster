@@ -1,7 +1,5 @@
 # Building a bare-metal Kubernetes cluster on Raspberry Pis
 
-This architecture implements a **multi-tenant Kubernetes platform** where **each tenant** (**workspace**) operates as an **isolated namespace** with its **own subdomain**, **authentication configuration**, and **service deployments**.
-
 <img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/4fb2e834-72f3-490d-91f5-fe5f9102b114" />
 
 This project runs on a small self-hosted Kubernetes cluster:
@@ -15,10 +13,10 @@ This project runs on a small self-hosted Kubernetes cluster:
 
 - **NGINX Ingress Controller**: Acts as the single entry point for HTTP(S) traffic, routing requests by path to the appropriate backend services. Manages external access, load balancing, and SSL termination within the cluster, routing traffic based on host/path. Requests can only reach applications through NGINX, and NGINX only injects identity headers after authentication.
 
-- TLS/Certificate Management
-    - Cloudflare handles TLS termination
-    - Internal traffic is HTTP (within cluster)
-    - Consider adding cert-manager for internal TLS if needed
+- **TLS/Certificate Management**
+    - Cloudflare handles **TLS termination**
+    - **Internal traffic is HTTP** (within cluster)
+    - ~~Consider adding cert-manager for internal TLS if needed~~
   
 - **Applications**: Exposed only internally via **ClusterIP services**;
   
@@ -31,6 +29,7 @@ This project runs on a small self-hosted Kubernetes cluster:
 
 - **Domain**: `devlabai.work` purchased and managed on Cloudflare
 
+This architecture implements a **multi-tenant Kubernetes platform** where **each tenant** (**workspace**) operates as an **isolated namespace** with its **own subdomain**, **authentication configuration**, and **service deployments**.
 - **Namespace Isolation**. Each **workspace** operates in its own Kubernetes **namespace**:
     - `cloudflare` - Cloudflare tunnel
     - `public` - Public landing page
