@@ -182,22 +182,20 @@ spaces/
         └── ingress.yaml         # Routes perso.devailab.work/* → services (public)
 ```
 
-# Improvements
+## Improvements
 
-- GitOps integration: Use ArgoCD or Flux for workspace deployment
-- Resource quotas: Set limits per workspace namespace
-- Network policies: Enforce inter-namespace communication rules
-- Service mesh: Consider Istio/Linkerd for advanced traffic management
-- Observability: Add Prometheus, Grafana, Jaeger
-- CI/CD: Automate application deployment per workspace
-- Multi-cluster: Extend architecture across multiple clusters
-- External secrets: Integrate with Vault or cloud secret managers
+- **GitOps integration**: Use ArgoCD or Flux for workspace deployment
+- **Resource quotas**: Set limits per workspace namespace
+- **Network policies**: Enforce inter-namespace communication rules
+- **Service mesh**: Consider Istio/Linkerd for advanced traffic management
+- **Observability**: Add Prometheus, Grafana, Jaeger
+- **CI/CD**: Automate application deployment per workspace
+- **Multi-cluster**: Extend architecture across multiple clusters
+- **External secrets**: Integrate with Vault or cloud secret managers
 
-Monitoring and Observability
-Key Metrics to Track
-
-- Pod health per namespace
-- Ingress request rates per hostname
-- Authentication success/failure rates
-- Service latency
-- Resource usage per workspace
+## Monitoring and Observability Key Metrics to Track
+- **Pod health per namespace**
+- **Ingress request rates per hostname**
+- **Authentication success/failure rates**
+- **Service latency**
+- **Resource usage per workspace**
