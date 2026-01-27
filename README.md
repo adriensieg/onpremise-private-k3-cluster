@@ -48,10 +48,21 @@ This project runs on a small self-hosted Kubernetes cluster:
 
 - **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers.
 
-- Identity Provider (IdP): Handles user authentication (e.g., Okta, Keycloak, GitHub).
+- **Dex** is an **identity provider abstraction layer** that sits between **OAuth2 Proxy** and **Azure Entra ID**, translating Azure's authentication into standardized OIDC tokens. Value Brought:
+    - **Protocol Translation**: Azure speaks Microsoft-specific OAuth2 → Dex converts to standard OIDC → OAuth2 Proxy only needs to understand one protocol
+    - **Provider Independence**: Want to switch from Azure to Google, GitHub, LDAP, or SAML? Change Dex connector config only—OAuth2 Proxy configuration stays identical. Without Dex, you'd reconfigure OAuth2 Proxy for each provider's quirks.
+    - **Multi-Provider Support**: Can enable multiple auth sources (Azure + Google + GitHub) simultaneously—Dex shows provider selection screen, OAuth2 Proxy sees unified OIDC interface.
+    - **Token Normalization**: Different providers return claims in different formats/names—Dex standardizes claim structure before passing to OAuth2 Proxy.
+
+- **Identity Provider (IdP)**: Handles user authentication (e.g., Okta, Keycloak, GitHub).
+
+- **Authentication Boundaries**
+    - **OAuth2-Proxy cookies** scoped to **workspace subdomain**
+    - **No cookie sharing between workspaces**
+    - **Each workspace can have different user access policies**
 
 
-- URL Mapping
+- **URL Mapping**:
 
 | URL                                      | Namespace | Service           | Port | Auth |
 |------------------------------------------|-----------|-------------------|------|------|
@@ -64,7 +75,6 @@ This project runs on a small self-hosted Kubernetes cluster:
 | https://perso.devailab.work/             | perso     | landing           | 80   | No   |
 | https://perso.devailab.work/landing      | perso     | landing           | 80   | No   |
 | https://perso.devailab.work/gemini-r1    | perso     | geminirealtime   | 8000 | No   |
-
 
 ```
 Internet
