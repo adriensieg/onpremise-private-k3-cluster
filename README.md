@@ -11,6 +11,21 @@ This project runs on a small self-hosted Kubernetes cluster:
     - **Control plane** (master): `10.0.0.50`
     - **Worker node**: `10.0.0.221`
 
+- **Cloudflare Tunnel**: Provides a secure external endpoint and forwards all incoming traffic to a single internal service — the **NGINX Ingress Controller**. Cloudflare Tunnel (cloudflared): Acts as a secure, outbound-only connection from our cluster to Cloudflare, exposing internal services without opening firewall ports, often running as a DaemonSet or Deployment.
+
+- **NGINX Ingress Controller**: Acts as the single entry point for HTTP(S) traffic, routing requests by path to the appropriate backend services. Manages external access, load balancing, and SSL termination within the cluster, routing traffic based on host/path.
+
+- TLS/Certificate Management
+    - Cloudflare handles TLS termination
+    - Internal traffic is HTTP (within cluster)
+    - Consider adding cert-manager for internal TLS if needed
+  
+- **Applications**: Exposed only internally via **ClusterIP services**;
+  
+- **Network isolation**: No external traffic reaches pods directly; all ingress goes through NGINX, and **ClusterIP services** are internal-only.
+
+- **Internet Aware Proxy (IAP)**: Intercepts traffic for multiple protocols, including SSH, Kubernetes, HTTPS, and databases, and ensures that only authenticated clients can connect to target resources.
+
 - **Domain**: `devlabai.work` purchased and managed on Cloudflare
 
 - **Namespace Isolation**. Each **workspace** operates in its own Kubernetes **namespace**:
@@ -23,33 +38,30 @@ This project runs on a small self-hosted Kubernetes cluster:
     - **Independent lifecycles**: Each workspace can be *deployed*, *updated*, or *deleted* independently
 
 - Keep **downstream apps** simple (**no auth logic**, **no JWT parsing**). Apps should be completely stateless regarding authentication. They just read “who is this user” and do their job.
+
 - Maintain **support** for **multiple IdPs**
+
 - Leverage **NGINX Ingress Controller** for **authentication enforcement**
 
-
-```
-| URL                                      | K8s Service       | Namespace | Auth Required      | Config File Path                              |
-|------------------------------------------|-------------------|-----------|--------------------|-----------------------------------------------|
-| https://devailab.work/landing             | landing           | public    | No                 | spaces/public/apps/landing/k8s/               |
-| https://mcd.devailab.work/landing         | landing           | mcd       | Yes (Azure AD)     | spaces/mcd/apps/landing/k8s/                  |
-| https://mcd.devailab.work/gemini-rl       | geminirealtime    | mcd       | Yes (Azure AD)     | spaces/mcd/apps/geminirealtime/k8s/           |
-| https://mcd.devailab.work/helloworld      | helloworld        | mcd       | Yes (Azure AD)     | spaces/mcd/apps/helloworld/k8s/               |
-| https://perso.devailab.work/landing       | landing           | perso     | No                 | spaces/perso/apps/landing/k8s/                |
-| https://perso.devailab.work/gemini-rl     | geminirealtime    | perso     | No                 | spaces/perso/apps/geminirealtime/k8s/         |
-```
-
-
-Cloudflare Tunnel (cloudflared): Acts as a secure, outbound-only connection from your cluster to Cloudflare, exposing internal services without opening firewall ports, often running as a DaemonSet or Deployment.
-NGINX Ingress Controller: Manages external access, load balancing, and SSL termination within the cluster, routing traffic based on host/path.
-OAuth2 Proxy: Sits in front of your application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers.
+- **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers.
 Identity Provider (IdP): Handles user authentication (e.g., Okta, Keycloak, GitHub). 
 
 
-- ✅ **Domain**: devlabai.work purchased and managed on Cloudflare
-- ✅ **Cloudflare Tunnel**: Secure encrypted tunnel from internet to your cluster
-- ✅ **NGINX Ingress**: Single entry point routing traffic by path
-- ✅ **Network Isolation**: Apps use ClusterIP (not exposed externally)
-- ✅ **Our Apps**: Accessible at https://devlabai.work/xxx
-- ✅ **High Availability**: 2 cloudflared replicas, NGINX ingress
-- ✅ **No Port Forwarding**: No open ports on your home network
-- ✅ **Free SSL**: Automatic HTTPS via Cloudflare
+GitOps integration: Use ArgoCD or Flux for workspace deployment
+Resource quotas: Set limits per workspace namespace
+Network policies: Enforce inter-namespace communication rules
+Service mesh: Consider Istio/Linkerd for advanced traffic management
+Observability: Add Prometheus, Grafana, Jaeger
+CI/CD: Automate application deployment per workspace
+Multi-cluster: Extend architecture across multiple clusters
+External secrets: Integrate with Vault or cloud secret managers
+
+
+Monitoring and Observability
+Key Metrics to Track
+
+Pod health per namespace
+Ingress request rates per hostname
+Authentication success/failure rates
+Service latency
+Resource usage per workspace
