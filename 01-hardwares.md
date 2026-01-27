@@ -9,4 +9,4 @@
 - [External SSD](https://www.amazon.com/dp/B0DX65SQXF?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)
 - [Cluster Case for Raspberry Pi](https://www.amazon.com/dp/B07D5MJ7PQ?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)
 - [Waveshare Power Over Ethernet (PoE) HAT](https://www.amazon.com/dp/B0DP1Y4RZV?ref=ppx_yo2ov_dt_b_fed_asin_title)
-- - Xfinity Arris TG1682P home router
+- Xfinity Arris TG1682P home router
