@@ -46,6 +46,22 @@ This project runs on a small self-hosted Kubernetes cluster:
 - **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers.
 Identity Provider (IdP): Handles user authentication (e.g., Okta, Keycloak, GitHub).
 
+
+- URL Mapping
+
+| URL                                      | Namespace | Service           | Port | Auth |
+|------------------------------------------|-----------|-------------------|------|------|
+| https://devailab.work/                   | public    | landing           | 80   | No   |
+| https://devailab.work/landing            | public    | landing           | 80   | No   |
+| https://mcd.devailab.work/               | mcd       | landing           | 80   | Yes  |
+| https://mcd.devailab.work/landing        | mcd       | landing           | 80   | Yes  |
+| https://mcd.devailab.work/helloworld     | mcd       | helloworld        | 8000 | Yes  |
+| https://mcd.devailab.work/gemini-r1      | mcd       | geminirealtime   | 8000 | Yes  |
+| https://perso.devailab.work/             | perso     | landing           | 80   | No   |
+| https://perso.devailab.work/landing      | perso     | landing           | 80   | No   |
+| https://perso.devailab.work/gemini-r1    | perso     | geminirealtime   | 8000 | No   |
+
+
 ```
 Internet
   │
