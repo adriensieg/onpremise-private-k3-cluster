@@ -1,7 +1,14 @@
 # Three-layer forward authentication using NGINX reverse proxy pattern:
 
+This setup uses both with Nginx as a reverse proxy - in front of containerized applications outside Kubernetes - and in the Kubernetes Ingress Controller (ingress-nginx).
+
+The Kubernetes cluster's ingress is exposed to the internet through a Cloudflare tunnel, providing a secure way to make a service accessible online without opening firewall ports for inbound traffic.
+
+<img width="955" height="574" alt="image" src="https://github.com/user-attachments/assets/e1da1f83-5673-408d-b92c-2ea1d9cff65f" />
+
+
 **Forward authentication** (**forward auth**) is a method where a **reverse proxy** (~~like Traefik, Caddy,~~ NGINX) intercepts requests to an application and **forwards** them to an ~~external~~ authentication service (~~like Authentik or Auth0~~) for validation, allowing the proxy to **secure apps without built-in login features** by **adding headers** with **user details** if access is granted.
-- If the **auth service** returns a successful response (2xx), the proxy lets the request through; otherwise, it sends the user to a **login page** or returns an error, **centralizing authentication logic** outside the application itself. 
+- If the **auth service** returns a successful response (2xx), the proxy lets the request through; otherwise, it sends the user to a **login page** or returns an error, **centralizing authentication logic** outside the application itself.
 
 - **NGINX Ingress** intercepts all requests and makes internal subrequests to **OAuth2 Proxy** (`/oauth2/auth`) before routing to apps.
 - **OAuth2 Proxy** validates **session cookies**;
@@ -486,7 +493,7 @@ connectors:
 
 - https://aws.amazon.com/blogs/containers/authenticate-to-amazon-eks-using-google-workspace/
 
-<img width="50%" height="50%" alt="image" src="https://github.com/user-attachments/assets/6039c73b-ab70-4a95-9b73-bc805f725758" />
+<img width="50%" height="50%" alt="image" src="https://github.com/user-attachments/assets/04926f27-4870-473f-bdda-6d47d07d4749" />
 
 - https://blog.thisisaditya.com/authentication-authorization-in-kubernetes-oauth2-proxy-with-dex-idp
 - https://datastrophic.io/secure-kubeflow-ingress-and-authentication/
@@ -494,7 +501,8 @@ connectors:
 
 - [What's OIDC protocol?](https://www.authlete.com/developers/tutorial/idp/)
 
-<img width="80%" height="80%" alt="image" src="https://github.com/user-attachments/assets/4973d3ee-d34c-4708-b8df-ad17b62827b9" />
+<img width="80%" height="80%" alt="image" src="https://github.com/user-attachments/assets/2c7ad2db-8a36-495f-b36f-193bb593d0c2" />
+
 
 - https://platform9.com/blog/ultimate-guide-to-kubernetes-ingress-controllers/
 
