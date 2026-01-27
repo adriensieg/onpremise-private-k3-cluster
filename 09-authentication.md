@@ -41,8 +41,6 @@ https://github.com/dexidp/dex/blob/master/connector/microsoft/microsoft.go
 
 - An [**ingress controller**](https://ngrok.com/blog/ingress-controller-vs-api-gateway) is a Kubernetes-native component designed to seamlessly route HTTP/HTTPS and other TCP traffic from the outside world (also known as north-south traffic) to the correct backend service running inside the Kubernetes cluster. Since external components lack the context to determine which pod or container should handle a request, an internal component—the ingress controller—is necessary. Essentially, an ingress controller translates Ingress resources into routing rules that reverse proxies can recognize and implement.
 
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/a08b54f0-b363-422a-b66c-44e5bafe2463" />
-
 - **CRD**: A custom plugin. It lets you add new types of "stuff" to Kubernetes that it didn't have before. A way to teach Kubernetes new tricks. It lets you create your own custom objects (like a DexClient) that K8s doesn't know by default. 
   
 - **OAuth2 Proxy Config**: The instructions for the guard (Who to trust? Where is the secret key?). The instructions for the guard (Who to trust? Where is the secret key?).
