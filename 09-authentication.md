@@ -1,6 +1,6 @@
 # Three-layer forward authentication using NGINX reverse proxy pattern:
 
-- **Forward authentication** (**forward auth**) is a method where a **reverse proxy** (~~like Traefik, Caddy,~~ NGINX) intercepts requests to an application and **forwards** them to an ~~external~~ authentication service (~~like Authentik or Auth0~~) for validation, allowing the proxy to **secure apps without built-in login features** by **adding headers** with **user details** if access is granted.
+**Forward authentication** (**forward auth**) is a method where a **reverse proxy** (~~like Traefik, Caddy,~~ NGINX) intercepts requests to an application and **forwards** them to an ~~external~~ authentication service (~~like Authentik or Auth0~~) for validation, allowing the proxy to **secure apps without built-in login features** by **adding headers** with **user details** if access is granted.
 - If the **auth service** returns a successful response (2xx), the proxy lets the request through; otherwise, it sends the user to a **login page** or returns an error, **centralizing authentication logic** outside the application itself. 
 
 - **NGINX Ingress** intercepts all requests and makes internal subrequests to **OAuth2 Proxy** (`/oauth2/auth`) before routing to apps.
