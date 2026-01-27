@@ -45,7 +45,7 @@ This architecture implements a **multi-tenant Kubernetes platform** where **each
 
 - Leverage **NGINX Ingress Controller** for **authentication enforcement**
 
-- **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers.
+- **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers. Auth gateway, validates sessions, injects user headers
 
 - **Dex** is an **identity provider abstraction layer** that sits between **OAuth2 Proxy** and **Azure Entra ID**, translating Azure's authentication into standardized OIDC tokens. Value Brought:
     - **Protocol Translation**: Azure speaks Microsoft-specific OAuth2 → Dex converts to standard OIDC → OAuth2 Proxy only needs to understand one protocol
