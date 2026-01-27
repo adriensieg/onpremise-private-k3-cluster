@@ -402,6 +402,52 @@ Cookie: _oauth2_proxy=VALID_SESSION_ID
 5. App responds
 6. **No redirects, instant access**
 
+```
+1. User visits: https://mcd.devailab.work/gemini-rl
+   │
+   ▼
+2. NGINX Ingress receives request
+   │
+   ▼
+3. Ingress annotation triggers auth subrequest
+   → nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.mcd.svc:4180/oauth2/auth"
+   │
+   ▼
+4. OAuth2-Proxy checks for valid session cookie
+   │
+   ├─ Valid cookie? ────────────────────────┐
+   │                                         │
+   │ No cookie / expired                     │ Yes, valid
+   ▼                                         ▼
+5. Redirect to OAuth2-Proxy login           Skip to step 9
+   → https://mcd.devailab.work/oauth2/start?rd=/gemini-rl
+   │
+   ▼
+6. OAuth2-Proxy redirects to Dex
+   → https://mcd.devailab.work/dex/auth?client_id=oauth2-proxy...
+   │
+   ▼
+7. Dex redirects to Azure AD
+   → https://login.microsoftonline.com/...
+   │
+   ▼
+8. User authenticates with Azure AD
+   │ Azure returns authorization code to Dex
+   │ Dex validates and returns code to OAuth2-Proxy
+   │ OAuth2-Proxy sets session cookie
+   │
+   ▼
+9. OAuth2-Proxy approves request with headers:
+   - X-Auth-Request-User
+   - X-Auth-Request-Email
+   │
+   ▼
+10. NGINX forwards request to backend service
+    → http://geminirealtime.mcd.svc:8000/gemini-rl
+    │
+    ▼
+11. Service responds, NGINX returns to user
+```
 
 # Configuration Deep Dive
 
