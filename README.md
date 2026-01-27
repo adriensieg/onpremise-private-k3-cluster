@@ -23,6 +23,9 @@ This project runs on a small self-hosted Kubernetes cluster:
 - **Applications**: Exposed only internally via **ClusterIP services**;
   
 - **Network isolation**: No external traffic reaches pods directly; all ingress goes through NGINX, and **ClusterIP services** are internal-only.
+  - Applications use **`ClusterIP`**
+  - Internal DNS names only resolve inside the cluster
+  - **Internet traffic cannot reach apps directly**
 
 - **Internet Aware Proxy (IAP)**: Intercepts traffic for multiple protocols, including SSH, Kubernetes, HTTPS, and databases, and ensures that only authenticated clients can connect to target resources.
 
@@ -44,7 +47,8 @@ This project runs on a small self-hosted Kubernetes cluster:
 - Leverage **NGINX Ingress Controller** for **authentication enforcement**
 
 - **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers.
-Identity Provider (IdP): Handles user authentication (e.g., Okta, Keycloak, GitHub).
+
+- Identity Provider (IdP): Handles user authentication (e.g., Okta, Keycloak, GitHub).
 
 
 - URL Mapping
