@@ -108,6 +108,81 @@ NGINX Ingress Controller (in ingress-nginx namespace)
              └─> Pod in perso namespace
 ```
 
+# Layout of the project
+
+```
+infrastructure/
+├── cloudflare/
+│   ├── configmap.yaml          # Tunnel config for all 3 hostnames
+│   ├── secret.yaml
+│   └── tunnel.yaml
+└── namespaces.yaml              # Namespaces: public, mcd, perso, cloudflare
+
+spaces/
+├── public/
+│   ├── apps/
+│   │   └── landing/
+│   │       ├── app/
+│   │       ├── Dockerfile
+│   │       └── k8s/
+│   │           ├── landing-deployment.yaml
+│   │           └── landing-service.yaml
+│   └── ingress/
+│       └── ingress.yaml         # Routes devailab.work/ → landing
+│
+├── mcd/
+│   ├── auth/
+│   │   ├── dex-config.yaml
+│   │   ├── dex-deployment.yaml
+│   │   ├── dex-service.yaml
+│   │   ├── dex-ingress.yaml
+│   │   ├── dex-secret.yaml
+│   │   ├── oauth2-proxy-config.yaml
+│   │   ├── oauth2-proxy-deployment.yaml
+│   │   ├── oauth2-proxy-service.yaml
+│   │   ├── oauth2-proxy-ingress.yaml
+│   │   └── oauth2-proxy-secret.yaml
+│   ├── apps/
+│   │   ├── landing/
+│   │   │   ├── app/
+│   │   │   ├── Dockerfile
+│   │   │   └── k8s/
+│   │   │       ├── landing-deployment.yaml
+│   │   │       └── landing-service.yaml
+│   │   ├── helloworld/
+│   │   │   ├── app/
+│   │   │   ├── Dockerfile
+│   │   │   └── k8s/
+│   │   │       ├── helloworld-deployment.yaml
+│   │   │       └── helloworld-service.yaml
+│   │   └── geminirealtime/
+│   │       ├── app/
+│   │       ├── Dockerfile
+│   │       └── k8s/
+│   │           ├── geminirealtime-deployment.yaml
+│   │           └── geminirealtime-service.yaml
+│   └── ingress/
+│       └── ingress.yaml         # Routes mcd.devailab.work/* → services (auth required)
+│
+└── perso/
+    ├── apps/
+    │   ├── landing/
+    │   │   ├── app/
+    │   │   ├── Dockerfile
+    │   │   └── k8s/
+    │   │       ├── landing-deployment.yaml
+    │   │       └── landing-service.yaml
+    │   └── geminirealtime/
+    │       ├── app/
+    │       ├── Dockerfile
+    │       └── k8s/
+    │           ├── geminirealtime-deployment.yaml
+    │           └── geminirealtime-service.yaml
+    └── ingress/
+        └── ingress.yaml         # Routes perso.devailab.work/* → services (public)
+```
+
+# Improvements
 
 - GitOps integration: Use ArgoCD or Flux for workspace deployment
 - Resource quotas: Set limits per workspace namespace
