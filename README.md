@@ -13,7 +13,7 @@ This project runs on a small self-hosted Kubernetes cluster:
 
 - **Cloudflare Tunnel**: Provides a secure external endpoint and forwards all incoming traffic to a single internal service — the **NGINX Ingress Controller**. Cloudflare Tunnel (cloudflared): Acts as a secure, outbound-only connection from our cluster to Cloudflare, exposing internal services without opening firewall ports, often running as a DaemonSet or Deployment.
 
-- **NGINX Ingress Controller**: Acts as the single entry point for HTTP(S) traffic, routing requests by path to the appropriate backend services. Manages external access, load balancing, and SSL termination within the cluster, routing traffic based on host/path.
+- **NGINX Ingress Controller**: Acts as the single entry point for HTTP(S) traffic, routing requests by path to the appropriate backend services. Manages external access, load balancing, and SSL termination within the cluster, routing traffic based on host/path. Requests can only reach applications through NGINX, and NGINX only injects identity headers after authentication.
 
 - TLS/Certificate Management
     - Cloudflare handles TLS termination
@@ -47,21 +47,20 @@ This project runs on a small self-hosted Kubernetes cluster:
 Identity Provider (IdP): Handles user authentication (e.g., Okta, Keycloak, GitHub). 
 
 
-GitOps integration: Use ArgoCD or Flux for workspace deployment
-Resource quotas: Set limits per workspace namespace
-Network policies: Enforce inter-namespace communication rules
-Service mesh: Consider Istio/Linkerd for advanced traffic management
-Observability: Add Prometheus, Grafana, Jaeger
-CI/CD: Automate application deployment per workspace
-Multi-cluster: Extend architecture across multiple clusters
-External secrets: Integrate with Vault or cloud secret managers
-
+- GitOps integration: Use ArgoCD or Flux for workspace deployment
+- Resource quotas: Set limits per workspace namespace
+- Network policies: Enforce inter-namespace communication rules
+- Service mesh: Consider Istio/Linkerd for advanced traffic management
+- Observability: Add Prometheus, Grafana, Jaeger
+- CI/CD: Automate application deployment per workspace
+- Multi-cluster: Extend architecture across multiple clusters
+- External secrets: Integrate with Vault or cloud secret managers
 
 Monitoring and Observability
 Key Metrics to Track
 
-Pod health per namespace
-Ingress request rates per hostname
-Authentication success/failure rates
-Service latency
-Resource usage per workspace
+- Pod health per namespace
+- Ingress request rates per hostname
+- Authentication success/failure rates
+- Service latency
+- Resource usage per workspace
