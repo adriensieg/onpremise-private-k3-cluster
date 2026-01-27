@@ -1,14 +1,9 @@
 # Three-layer forward authentication using NGINX reverse proxy pattern:
 
-This setup uses both with Nginx as a reverse proxy - in front of containerized applications outside Kubernetes - and in the Kubernetes Ingress Controller (ingress-nginx).
-
-The Kubernetes cluster's ingress is exposed to the internet through a Cloudflare tunnel, providing a secure way to make a service accessible online without opening firewall ports for inbound traffic.
-
-<img width="955" height="574" alt="image" src="https://github.com/user-attachments/assets/e1da1f83-5673-408d-b92c-2ea1d9cff65f" />
-
-
 **Forward authentication** (**forward auth**) is a method where a **reverse proxy** (~~like Traefik, Caddy,~~ NGINX) intercepts requests to an application and **forwards** them to an ~~external~~ authentication service (~~like Authentik or Auth0~~) for validation, allowing the proxy to **secure apps without built-in login features** by **adding headers** with **user details** if access is granted.
 - If the **auth service** returns a successful response (2xx), the proxy lets the request through; otherwise, it sends the user to a **login page** or returns an error, **centralizing authentication logic** outside the application itself.
+
+<img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/e1da1f83-5673-408d-b92c-2ea1d9cff65f" />
 
 - **NGINX Ingress** intercepts all requests and makes internal subrequests to **OAuth2 Proxy** (`/oauth2/auth`) before routing to apps.
 - **OAuth2 Proxy** validates **session cookies**;
@@ -18,7 +13,6 @@ The Kubernetes cluster's ingress is exposed to the internet through a Cloudflare
 - **NGINX** strips **all incoming auth headers**, injects only **OAuth2 Proxy-validated headers**, and forwards requests to **ClusterIP** apps which trust headers due to **network isolation—apps** cannot be reached except through **NGINX**, eliminating auth logic from application code entirely.
 
 <img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/2478eda9-5ab6-47a1-973a-7bf541461d71" />
-
 
 https://github.com/dexidp/dex/blob/master/connector/microsoft/microsoft.go
 
