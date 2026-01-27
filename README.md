@@ -44,7 +44,40 @@ This project runs on a small self-hosted Kubernetes cluster:
 - Leverage **NGINX Ingress Controller** for **authentication enforcement**
 
 - **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers.
-Identity Provider (IdP): Handles user authentication (e.g., Okta, Keycloak, GitHub). 
+Identity Provider (IdP): Handles user authentication (e.g., Okta, Keycloak, GitHub).
+
+```
+Internet
+  │
+  ▼
+Cloudflare CDN (TLS termination)
+  │
+  ▼
+Cloudflare Tunnel (encrypted connection to cluster)
+  │
+  ▼
+cloudflared Pod (in cloudflare namespace)
+  │
+  ▼
+NGINX Ingress Controller (in ingress-nginx namespace)
+  │
+  ├─ Host: devailab.work
+  │  └─> Ingress in public namespace
+  │      └─> Service in public namespace
+  │          └─> Pod in public namespace
+  │
+  ├─ Host: mcd.devailab.work
+  │  └─> Ingress in mcd namespace
+  │      ├─> OAuth2-Proxy (auth check)
+  │      │   └─> Dex (if needed)
+  │      └─> Service in mcd namespace
+  │          └─> Pod in mcd namespace
+  │
+  └─ Host: perso.devailab.work
+     └─> Ingress in perso namespace
+         └─> Service in perso namespace
+             └─> Pod in perso namespace
+```
 
 
 - GitOps integration: Use ArgoCD or Flux for workspace deployment
