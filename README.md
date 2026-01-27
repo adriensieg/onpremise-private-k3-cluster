@@ -1,37 +1,30 @@
 # Building a bare-metal Kubernetes cluster on Raspberry Pis
 
-This architecture implements a multi-tenant Kubernetes platform where each tenant (workspace) operates as an isolated namespace with its own subdomain, authentication configuration, and service deployments.
+This architecture implements a **multi-tenant Kubernetes platform** where **each tenant** (**workspace**) operates as an **isolated namespace** with its **own subdomain**, **authentication configuration**, and **service deployments**.
 
 <img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/4fb2e834-72f3-490d-91f5-fe5f9102b114" />
 
+This project runs on a small self-hosted Kubernetes cluster:
+- **Cluster type**: K3s
+- **Hardware**: 2 × Raspberry Pi 4B
+- **Nodes**:
+    - **Control plane** (master): `10.0.0.50`
+    - **Worker node**: `10.0.0.221`
 
 - **Domain**: `devlabai.work` purchased and managed on Cloudflare
 
-- **Multi-tenant Kubernetes** architecture with 3 **workspaces**:
-    - **public**: *Unauthenticated* public landing page at `devailab.work`
-    - **mcd**: *Authenticated workspace* at `mcd.devailab.work` (Azure AD via Dex + OAuth2-Proxy)
-    - **perso**: Public workspace at `perso.devailab.work` (no authentication)
+- **Namespace Isolation**. Each **workspace** operates in its own Kubernetes **namespace**:
+    - `cloudflare` - Cloudflare tunnel
+    - `public` - Public landing page
+    - `mcd` - MCD workspace with authentication
+    - `perso` - Personal workspace without authentication
+    - **One namespace per workspace**: Each tenant gets a dedicated Kubernetes namespace.
+    - **Resource isolation**: *Pods*, *services*, and *config* are **scoped to their namespace**.
+    - **Independent lifecycles**: Each workspace can be *deployed*, *updated*, or *deleted* independently
 
-
-
-Namespace Isolation
-Each workspace operates in its own Kubernetes namespace:
-
-cloudflare - Cloudflare tunnel
-public - Public landing page
-mcd - MCD workspace with authentication
-perso - Personal workspace without authentication
-
-
-
-
-- **Centralize authentication** for all apps using a single OAuth proxy layer
-- Ensure all public traffic is authenticated before reaching any app
-- Keep downstream apps simple (no auth logic, no JWT parsing)
-- Maintain support for multiple IdPs
-- Leverage NGINX Ingress Controller for authentication enforcement
-- Key requirement: Apps should be completely stateless regarding authentication. They just read “who is this user” and do their job.
-- Host vs path urls
+- Keep **downstream apps** simple (**no auth logic**, **no JWT parsing**). Apps should be completely stateless regarding authentication. They just read “who is this user” and do their job.
+- Maintain **support** for **multiple IdPs**
+- Leverage **NGINX Ingress Controller** for **authentication enforcement**
 
 
 ```
