@@ -1,6 +1,22 @@
 # Deployment of a multi-tenant Kubernetes Cluster
 
-### The layout
+This guide covers the deployment of a **multi-tenant Kubernetes** architecture with 3 workspaces:
+- **`public`**: Unauthenticated public landing page at devailab.work
+- **`mcd`**: Authenticated workspace at mcd.devailab.work (Azure AD via Dex + OAuth2-Proxy)
+- **`perso`**: Public workspace at perso.devailab.work (no authentication)
+
+#### Authentication Architecture: 
+- **Authentication** components (**Dex**, **OAuth2-Proxy**) are **deployed per workspace**
+- Only the **`mcd`** namespace includes **authentication** infrastructure
+- Each **authenticated workspace** can have its **own IDP configuration**
+
+#### URL Routing
+- Cloudflare tunnel routes all 3 domains to **NGINX Ingress Controller**
+- **NGINX Ingress rules** route based on **hostname** and **path**
+- **Each workspace** has its **own Ingress resource** in **its namespace**
+
+
+# The layout
 ```
 infrastructure/
 ├── cloudflare/
@@ -72,6 +88,29 @@ spaces/
     └── ingress/
         └── ingress.yaml         # Routes perso.devailab.work/* → services (public)
 ```
+
+<img width="904" height="485" alt="image" src="https://github.com/user-attachments/assets/94efcf2e-db7f-42dd-bbd9-2dfdf5dd3a5b" />
+
+
+# The deployment
+
+### 1. Create Namespaces
+
+### 2. Setup Cloudflare Tunnel
+
+### 3. Deploy Public Workspace
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ```
