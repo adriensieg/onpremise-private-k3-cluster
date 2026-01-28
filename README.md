@@ -45,6 +45,11 @@ This architecture implements a **multi-tenant Kubernetes platform** where **each
 
 - Leverage **NGINX Ingress Controller** for **authentication enforcement**
 
+- **URL Routing**
+    - Cloudflare tunnel routes all 3 domains to **NGINX Ingress Controller**
+    - **NGINX Ingress rules** route based on **hostname** and **path**
+    - **Each workspace** has its **own Ingress resource** in **its namespace**
+
 - **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers. Auth gateway, validates sessions, injects user headers
 
 - **Dex** is an **identity provider abstraction layer** that sits between **OAuth2 Proxy** and **Azure Entra ID**, translating Azure's authentication into standardized OIDC tokens. Value Brought:
