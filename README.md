@@ -1,6 +1,6 @@
 # Building a bare-metal Kubernetes cluster on Raspberry Pis
 
-<img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/4fb2e834-72f3-490d-91f5-fe5f9102b114" />
+<img width="50%" height="50%" alt="image" src="https://github.com/user-attachments/assets/0bf01d07-7f3f-4756-b86e-0e7bc7cca1aa" />
 
 This project runs on a small self-hosted Kubernetes cluster:
 - **Cluster type**: K3s
