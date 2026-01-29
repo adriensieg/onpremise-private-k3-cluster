@@ -15,6 +15,25 @@ This guide covers the deployment of a **multi-tenant Kubernetes** architecture w
 - **NGINX Ingress rules** route based on **hostname** and **path**
 - **Each workspace** has its **own Ingress resource** in **its namespace**
 
+# The deployment
+
+### 1. Create Namespaces
+
+```
+kubectl apply -f infrastructure/namespaces.yaml
+```
+
+### 2. Setup Cloudflare Tunnel
+
+Prepare Cloudflare Credentials
+You need two files from Cloudflare:
+
+cert.pem - Origin certificate
+credentials.json - Tunnel credentials
+### 3. Deploy Public Workspace
+
+<img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/94efcf2e-db7f-42dd-bbd9-2dfdf5dd3a5b" />
+
 
 # The layout
 ```
@@ -88,28 +107,6 @@ spaces/
     └── ingress/
         └── ingress.yaml         # Routes perso.devailab.work/* → services (public)
 ```
-
-<img width="904" height="485" alt="image" src="https://github.com/user-attachments/assets/94efcf2e-db7f-42dd-bbd9-2dfdf5dd3a5b" />
-
-
-# The deployment
-
-### 1. Create Namespaces
-
-### 2. Setup Cloudflare Tunnel
-
-### 3. Deploy Public Workspace
-
-
-
-
-
-
-
-
-
-
-
 
 
 
