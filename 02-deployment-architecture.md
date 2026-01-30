@@ -25,14 +25,34 @@ kubectl apply -f infrastructure/namespaces.yaml
 
 ### 2. Setup Cloudflare Tunnel
 
-Prepare Cloudflare Credentials
-You need two files from Cloudflare:
+1. Prepare Cloudflare Credentials - two files from Cloudflare:
+    - `cert.pem` - Origin certificate
+    - `credentials.json` - Tunnel credentials
+ 
+2. Deploy Cloudflare Tunnel
+```
+kubectl apply -f infrastructure/cloudflare/secret.yaml
+kubectl apply -f infrastructure/cloudflare/configmap.yaml
+kubectl apply -f infrastructure/cloudflare/tunnel.yaml
+```
 
-cert.pem - Origin certificate
-credentials.json - Tunnel credentials
-### 3. Deploy Public Workspace
+3. Configure DNS in Cloudflare. Add CNAME records pointing to your tunnel:
+    - `devailab.work` → <tunnel-id>.cfargotunnel.com
+    - `mcd.devailab.work` → <tunnel-id>.cfargotunnel.com
+    - `perso.devailab.work` → <tunnel-id>.cfargotunnel.com
 
 <img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/94efcf2e-db7f-42dd-bbd9-2dfdf5dd3a5b" />
+
+### 3. Deploy Public Workspace
+
+```
+# Deploy landing page
+kubectl apply -f spaces/public/apps/landing/k8s/landing-deployment.yaml
+kubectl apply -f spaces/public/apps/landing/k8s/landing-service.yaml
+
+# Deploy ingress
+kubectl apply -f spaces/public/ingress/ingress.yaml
+```
 
 
 # The layout
