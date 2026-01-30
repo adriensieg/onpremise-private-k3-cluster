@@ -1,5 +1,21 @@
 
 
+## Workspace Layer
+Each workspace follows a consistent structure:
+
+```
+<workspace>/
+├── auth/                   # Optional: Only for authenticated workspaces
+│   ├── dex-*               # Identity provider proxy
+│   └── oauth2-proxy-*      # Authentication middleware
+├── apps/
+│   └── <app-name>/
+│       └── k8s/
+│           ├── <app>-deployment.yaml
+│           └── <app>-service.yaml
+└── ingress/
+    └── ingress.yaml        # Routes hostname/* to services
+```
 
 ### Deploy `helloworld` service
 ```
