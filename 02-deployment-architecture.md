@@ -40,12 +40,17 @@ kubectl apply -f infrastructure/cloudflare/tunnel.yaml
     - `devailab.work` → <tunnel-id>.cfargotunnel.com
     - `mcd.devailab.work` → <tunnel-id>.cfargotunnel.com
     - `perso.devailab.work` → <tunnel-id>.cfargotunnel.com
+  
+- Go to Zero Trust dashboard
+- Navigate to Networks > Tunnels
+- Find our tunnel name (k3s-ingress)
+- Copy the Tunnel ID from the URL or tunnel details
 
 <img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/94efcf2e-db7f-42dd-bbd9-2dfdf5dd3a5b" />
 
 ### 3. A. Deploy `Public` Workspace - without Authentication
 
-[Deployment of a Service](https://github.com/adriensieg/onpremise-private-k3-cluster/edit/master/03-deployment-services.md)
+[Deployment of a Service](https://github.com/adriensieg/onpremise-private-k3-cluster/blob/master/03-deployment-services.md)
 
 ```
 <workspace>/
