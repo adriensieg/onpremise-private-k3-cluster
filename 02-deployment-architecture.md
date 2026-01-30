@@ -163,31 +163,6 @@ kubectl get svc -n mcd
 kubectl get ingress -n mcd
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # The layout
 ```
 infrastructure/
