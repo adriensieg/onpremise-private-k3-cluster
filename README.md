@@ -39,34 +39,20 @@ This architecture implements a **multi-tenant Kubernetes platform** where **each
     - **Resource isolation**: *Pods*, *services*, and *config* are **scoped to their namespace**.
     - **Independent lifecycles**: Each workspace can be *deployed*, *updated*, or *deleted* independently
 
+- Leverage **NGINX Ingress Controller** for **authentication enforcement** - Layer 7 routing within cluster
+  
 - Keep **downstream apps** simple (**no auth logic**, **no JWT parsing**). Apps should be completely stateless regarding authentication. They just read “who is this user” and do their job.
-
-- Maintain **support** for **multiple IdPs**
-
-- Leverage **NGINX Ingress Controller** for **authentication enforcement**
 
 - **URL Routing**
     - Cloudflare tunnel routes all 3 domains to **NGINX Ingress Controller**
     - **NGINX Ingress rules** route based on **hostname** and **path**
     - **Each workspace** has its **own Ingress resource** in **its namespace**
 
-- **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers. Auth gateway, validates sessions, injects user headers
-
-- **Dex** is an **identity provider abstraction layer** that sits between **OAuth2 Proxy** and **Azure Entra ID**, translating Azure's authentication into standardized OIDC tokens. Value Brought:
-    - **Protocol Translation**: Azure speaks Microsoft-specific OAuth2 → Dex converts to standard OIDC → OAuth2 Proxy only needs to understand one protocol
-    - **Provider Independence**: Want to switch from Azure to Google, GitHub, LDAP, or SAML? Change Dex connector config only—OAuth2 Proxy configuration stays identical. Without Dex, you'd reconfigure OAuth2 Proxy for each provider's quirks.
-    - **Multi-Provider Support**: Can enable multiple auth sources (Azure + Google + GitHub) simultaneously—Dex shows provider selection screen, OAuth2 Proxy sees unified OIDC interface.
-    - **Token Normalization**: Different providers return claims in different formats/names—Dex standardizes claim structure before passing to OAuth2 Proxy.
-
-- **Identity Provider (IdP)**: Handles user authentication (e.g., Okta, Keycloak, GitHub).
-
-- **Authentication Boundaries**
-    - **OAuth2-Proxy cookies** scoped to **workspace subdomain**
-    - **No cookie sharing between workspaces**
-    - **Each workspace can have different user access policies**
-
-
-- **URL Mapping**:
+ - **Domain-Based Routing**
+     - **Subdomain per workspace**: `<workspace>.devailab.work`
+     - **Path-based service routing**: Services within a workspace are accessible via **paths** (e.g., `/gemini-rl`, `/helloworld`)
+     - **Shared ingress controller**: All workspaces route through the **same NGINX Ingress Controller**
+     - - **URL Mapping**:
 
 | URL                                      | Namespace | Service           | Port | Auth |
 |------------------------------------------|-----------|-------------------|------|------|
@@ -79,6 +65,28 @@ This architecture implements a **multi-tenant Kubernetes platform** where **each
 | https://perso.devailab.work/             | perso     | landing           | 80   | No   |
 | https://perso.devailab.work/landing      | perso     | landing           | 80   | No   |
 | https://perso.devailab.work/gemini-r1    | perso     | geminirealtime   | 8000 | No   |
+
+**Authentication**: 
+- **Workspace-scoped authentication**: Auth components deploy per workspace, not globally
+- **Flexible IDP integration**: Each workspace can use different identity providers
+- **Optional authentication**: Workspaces can be public or authenticated
+- **Authentication Boundaries**
+    - **OAuth2-Proxy cookies** scoped to **workspace subdomain**
+    - **No cookie sharing between workspaces**
+    - **Each workspace can have different user access policies**
+
+- **OAuth2 Proxy**: Sits in front of our application, managing the OAuth/OIDC flow, redirecting users to an Identity Provider (IdP) for login, and setting authenticated user headers. Auth gateway, validates sessions, injects user headers
+
+- **Dex** is an **identity provider abstraction layer** that sits between **OAuth2 Proxy** and **Azure Entra ID**, translating Azure's authentication into standardized OIDC tokens. Value Brought:
+    - **Protocol Translation**: Azure speaks Microsoft-specific OAuth2 → Dex converts to standard OIDC → OAuth2 Proxy only needs to understand one protocol
+    - **Provider Independence**: Want to switch from Azure to Google, GitHub, LDAP, or SAML? Change Dex connector config only—OAuth2 Proxy configuration stays identical. Without Dex, you'd reconfigure OAuth2 Proxy for each provider's quirks.
+    - **Multi-Provider Support**: Can enable multiple auth sources (Azure + Google + GitHub) simultaneously—Dex shows provider selection screen, OAuth2 Proxy sees unified OIDC interface.
+    - **Token Normalization**: Different providers return claims in different formats/names—Dex standardizes claim structure before passing to OAuth2 Proxy.
+
+- **Scalability**
+    - **Horizontal workspace scaling**: Add new workspaces by duplicating configuration
+    - **Service reuse**: Same application can deploy to multiple workspaces
+    - **Resource efficiency**: Services only deploy where needed
 
 ```
 Internet
@@ -188,7 +196,6 @@ spaces/
 ```
 
 ## Improvements
-
 - **GitOps integration**: Use ArgoCD or Flux for workspace deployment
 - **Resource quotas**: Set limits per workspace namespace
 - **Network policies**: Enforce inter-namespace communication rules
