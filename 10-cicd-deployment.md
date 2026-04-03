@@ -21,3 +21,22 @@
 - [Deploy AI agents on Amazon Bedrock AgentCore using GitHub Actions](https://aws.amazon.com/blogs/machine-learning/deploy-ai-agents-on-amazon-bedrock-agentcore-using-github-actions/)
 - [Create a CI/CD pipeline for Amazon ECS with GitHub Actions and AWS CodeBuild Tests](https://aws.amazon.com/blogs/containers/create-a-ci-cd-pipeline-for-amazon-ecs-with-github-actions-and-aws-codebuild-tests/)
 - [What If we shipped models the same way we ship code?](https://www.cncf.io/blog/2026/03/27/the-weight-of-ai-models-why-infrastructure-always-arrives-slowly/)
+
+```
+└── <workspace>/
+    ├── apps/
+    │   ├── <app-name>/
+    │   │   ├── app/
+    │   │   ├── Dockerfile
+    │   │   └── k8s/
+    │   │       ├── deployment.yaml
+    │   │       └── service.yaml
+    │   └── <app-name>/
+    │       ├── app/
+    │       ├── Dockerfile
+    │       └── k8s/
+    │           ├── deployment.yaml
+    │           └── service.yaml
+    └── ingress/
+        └── ingress.yaml         # Routes <workspace>.devailab.work/* → services (public)
+```
