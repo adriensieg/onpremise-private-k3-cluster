@@ -76,3 +76,92 @@ winget install ArgoProj.ArgoCD
     └── ingress/
         └── ingress.yaml         # Routes <workspace>.devailab.work/* → services (public)
 ```
+
+```
+infrastructure/
+├── cloudflare/
+│   ├── configmap.yaml       
+│   ├── secret.yaml
+│   └── tunnel.yaml
+├── ssd-storageclass.yaml
+└── namespaces.yaml              
+
+spaces/
+├── public/
+│   ├── apps/
+│   │   └── landing/
+│   │       ├── app/
+│   │       ├── Dockerfile
+│   │       └── k8s/
+│   │           ├── deployment.yaml
+│   │           └── service.yaml
+│   └── ingress/
+│       └── ingress.yaml         # Routes devailab.work/ → landing
+│
+├── mcd/
+│   ├── auth/
+│   │   ├── dex-config.yaml
+│   │   ├── dex-deployment.yaml
+│   │   ├── dex-service.yaml
+│   │   ├── dex-ingress.yaml
+│   │   ├── dex-secret.yaml
+│   │   ├── oauth2-proxy-config.yaml
+│   │   ├── oauth2-proxy-deployment.yaml
+│   │   ├── oauth2-proxy-service.yaml
+│   │   ├── oauth2-proxy-ingress.yaml
+│   │   └── oauth2-proxy-secret.yaml
+│   ├── apps/
+│   │   ├── landing/
+│   │   │   ├── app/
+│   │   │   ├── Dockerfile
+│   │   │   └── k8s/
+│   │   │       ├── deployment.yaml
+│   │   │       └── service.yaml
+│   │   ├── helloworld/
+│   │   │   ├── app/
+│   │   │   ├── Dockerfile
+│   │   │   └── k8s/
+│   │   │       ├── deployment.yaml
+│   │   │       └── service.yaml
+│   │   └── geminirealtime/
+│   │       ├── app/
+│   │       ├── Dockerfile
+│   │       └── k8s/
+│   │           ├── deployment.yaml
+│   │           └── service.yaml
+│   └── ingress/
+│       └── ingress.yaml         # Routes mcd.devailab.work/* → services (auth required)
+├── hackaton/
+│   └── apps/
+│      └── mcpserver/
+│           ├── app/
+│           │   ├── app.py
+│           │   └── requirements.txt
+│           ├── k8s/
+│           │   ├── deployment.yaml
+│           │   ├── service.yaml
+│           │   └── Dockerfile
+│           ├── ingress/
+│           │   └── ingress.yaml     # Routes hackaton.devailab.work/mcp
+│           └── nginx.conf
+│
+└── perso/
+    ├── apps/
+    │   ├── landing/
+    │   │   ├── app/
+    │   │   ├── Dockerfile
+    │   │   └── k8s/
+    │   │       ├── landing-deployment.yaml
+    │   │       └── landing-service.yaml
+    │   └── geminirealtime/
+    │       ├── app/
+    │       ├── Dockerfile
+    │       └── k8s/
+    │           ├── geminirealtime-deployment.yaml
+    │           └── geminirealtime-service.yaml
+    └── ingress/
+        └── ingress.yaml         # Routes perso.devailab.work/* → services (public)
+```
+
+
+
