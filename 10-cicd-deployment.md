@@ -127,7 +127,7 @@ onpremise-private-k3-cluster/
 
 Every `deployment.yaml` currently references a **local image** name like `landing:latest`. You must change each one to its **GHCR equivalent**. 
 
-<img width="75%" height="75%" alt="image" src="https://github.com/user-attachments/assets/e191916f-d4f5-458d-9772-0aee9cbb0987" />
+<img width="50%" height="50%" alt="image" src="https://github.com/user-attachments/assets/e191916f-d4f5-458d-9772-0aee9cbb0987" />
 
 For example: 
 ```
