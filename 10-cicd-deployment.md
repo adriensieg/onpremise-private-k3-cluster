@@ -1,9 +1,45 @@
 
 # Situation
 
-# Components I want 
-- ML Model Registry: Hugging Face
-- Code Repo: Github
+- **GitHub Actions** builds & pushes an **ARM64 Docker image** to **GHCR**
+- *ArgoCD* detects the new image tag and syncs your **K8s manifests**. ArgoCD runs inside our cluster and pulls from GitHub. It never needs inbound internet access
+
+- **K3s** deploys the new pods
+- **NGINX** + **Cloudflare** serve it publicly
+
+- arm64 or amd64
+- arm64 or x64
+
+## Implementation
+- **Install ArgoCD on our K3s cluster**: SSH into our control plane (we need to be on your local network for this initial setup)
+- **Restructure our GitHub repository**: Our repo needs a clear separation between app source code and Kubernetes manifests. ArgoCD watches the manifests; GitHub Actions updates them.
+- **Configure GHCR access**: Our cluster needs credentials to pull images from GHCR. Create a GitHub Personal Access Token (PAT) with read:packages scope at `https://github.com/settings/tokens`. Then create the pull secret in each namespace that needs it. 
+- **GitHub Actions workflow**: Create `.github/workflows/deploy.yaml`. This workflow detects which app changed and only rebuilds that app.
+- **Configure ArgoCD Applications**: Create one ArgoCD Application resource per workspace. ArgoCD will watch that folder in our repo and keep the cluster in sync
+- **Repository secrets**: That's it. GITHUB_TOKEN is automatically injected by Actions and has write access to GHCR for your repo. No additional secrets needed for the basic flow.
+- The new deployment workflow
+- Monitoring deployments
+
+
+ArgoCD watches your Git repo for manifest changes. When GitHub Actions updates the image tag in deployment.yaml and pushes that commit, ArgoCD detects the diff and automatically syncs the new deployment to your cluster. This is the GitOps pattern — Git is the single source of truth.
+
+You can push from anywhere — your laptop at a café, your office, anywhere with internet. ArgoCD on your cluster polls GitHub every 3 minutes (or you can configure a webhook for instant sync).
+
+### 1. Install ArgoCD on our K3s cluster. 
+
+SSH into our **control plane** (we need to be on **our local network** for this initial setup)
+
+```
+# Create the ArgoCD namespace and install
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Wait for all pods to be ready
+kubectl wait --for=condition=Ready pod --all -n argocd --timeout=300s
+
+# Install the ArgoCD CLI on your local machine (Windows)
+winget install ArgoProj.ArgoCD
+```
 
 # Architecture
 
