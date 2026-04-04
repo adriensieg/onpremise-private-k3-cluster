@@ -1,16 +1,19 @@
 
 # Situation
 
+- arm64 or amd64
+- arm64 or x64
+- Should I store my secrets into Deployment.yaml? Where should i store my .env secrets?
+
+## Implementation
+
 - **GitHub Actions** builds & pushes an **ARM64 Docker image** to **GHCR**
 - *ArgoCD* detects the new image tag and syncs your **K8s manifests**. ArgoCD runs inside our cluster and pulls from GitHub. It never needs inbound internet access
 
 - **K3s** deploys the new pods
 - **NGINX** + **Cloudflare** serve it publicly
 
-- arm64 or amd64
-- arm64 or x64
 
-## Implementation
 - **Install ArgoCD on our K3s cluster**: SSH into our control plane (we need to be on your local network for this initial setup)
 - **Restructure our GitHub repository**: Our repo needs a clear separation between app source code and Kubernetes manifests. ArgoCD watches the manifests; GitHub Actions updates them.
 - **Configure GHCR access**: Our cluster needs credentials to pull images from GHCR. Create a GitHub Personal Access Token (PAT) with read:packages scope at `https://github.com/settings/tokens`. Then create the pull secret in each namespace that needs it. 
