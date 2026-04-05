@@ -141,7 +141,8 @@ onpremise-private-k3-cluster/
 
 Every `deployment.yaml` currently references a **local image** name like `landing:latest`. You must change each one to its **GHCR equivalent**. 
 
-<img width="50%" height="50%" alt="image" src="https://github.com/user-attachments/assets/e191916f-d4f5-458d-9772-0aee9cbb0987" />
+<img width="70%" height="70%" alt="image" src="https://github.com/user-attachments/assets/b32948a2-29ef-4378-8b1d-0169f378c4b1" />
+
 
 For example: 
 ```
@@ -227,7 +228,9 @@ argocd login localhost:8080 --username admin --password hGjYz4DgcRcvrAC5 --insec
 argocd account update-password
 ```
 
-Configure GHCR access (must be home)
+### Configure GHCR access (must be home)
+
+#### Create a GitHub Personal Access Token
 
 # Architecture
 
