@@ -219,6 +219,9 @@ argocd login localhost:8080 `
   --insecure
 ```
 
+argocd login localhost:8080 --username admin --password hGjYz4DgcRcvrAC5 --insecure
+
+
 ▶️ Change the default password immediately
 ```
 argocd account update-password
