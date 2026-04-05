@@ -157,6 +157,8 @@ spec:
 
 #### 3. Create the GitHub Actions workflow
 
+Create `.github/workflows/deploy.yaml`
+
 ```
 name: Build and deploy
 
