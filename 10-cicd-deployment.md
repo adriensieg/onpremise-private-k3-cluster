@@ -20,9 +20,9 @@ Why commit the manifest back? ArgoCD watches your Git repo for manifest changes.
 You can push from anywhere — your laptop at a café, your office, anywhere with internet. ArgoCD on your cluster polls GitHub every 3 minutes (or you can configure a webhook for instant sync).
 
 ### What we must implement? 
-- **Install ArgoCD on our K3s cluster**: SSH into our control plane (we need to be on your local network for this initial setup)
-- **Restructure our GitHub repository**: Our repo needs a clear separation between app source code and Kubernetes manifests. ArgoCD watches the manifests; GitHub Actions updates them.
-- **Configure GHCR access**: Our cluster needs credentials to pull images from GHCR. Create a GitHub Personal Access Token (PAT) with read:packages scope at `https://github.com/settings/tokens`. Then create the pull secret in each namespace that needs it. 
+- **Install ArgoCD on our K3s cluster**: SSH into our control plane (we need to be on our local network for this initial setup)
+- **Restructure our GitHub repository**: Our repo needs a clear separation between **app source code** and **Kubernetes manifests**. ArgoCD watches the manifests; GitHub Actions updates them.
+- **Configure GHCR access**: Our cluster needs credentials to **pull images from GHCR**. Create a **GitHub Personal Access Token (PAT)** with `read:packages` scope at `https://github.com/settings/tokens`. Then create the **pull secret in each namespace** that needs it. 
 - **GitHub Actions workflow**: Create `.github/workflows/deploy.yaml`. This workflow detects which app changed and only rebuilds that app.
 - **Configure ArgoCD Applications**: Create one ArgoCD Application resource per workspace. ArgoCD will watch that folder in our repo and keep the cluster in sync
 - **Repository secrets**: That's it. GITHUB_TOKEN is automatically injected by Actions and has write access to GHCR for your repo. No additional secrets needed for the basic flow.
