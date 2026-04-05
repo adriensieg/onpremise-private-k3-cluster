@@ -7,13 +7,19 @@
 
 ## Implementation
 
+### How it works? 
+
 - **GitHub Actions** builds & pushes an **ARM64 Docker image** to **GHCR**
 - *ArgoCD* detects the new image tag and syncs your **K8s manifests**. ArgoCD runs inside our cluster and pulls from GitHub. It never needs inbound internet access
 
 - **K3s** deploys the new pods
 - **NGINX** + **Cloudflare** serve it publicly
 
+Why commit the manifest back? ArgoCD watches your Git repo for manifest changes. When GitHub Actions updates the image tag in deployment.yaml and pushes that commit, ArgoCD detects the diff and automatically syncs the new deployment to your cluster. This is the GitOps pattern — Git is the single source of truth.
 
+You can push from anywhere — your laptop at a café, your office, anywhere with internet. ArgoCD on your cluster polls GitHub every 3 minutes (or you can configure a webhook for instant sync).
+
+### What we must implement? 
 - **Install ArgoCD on our K3s cluster**: SSH into our control plane (we need to be on your local network for this initial setup)
 - **Restructure our GitHub repository**: Our repo needs a clear separation between app source code and Kubernetes manifests. ArgoCD watches the manifests; GitHub Actions updates them.
 - **Configure GHCR access**: Our cluster needs credentials to pull images from GHCR. Create a GitHub Personal Access Token (PAT) with read:packages scope at `https://github.com/settings/tokens`. Then create the pull secret in each namespace that needs it. 
@@ -23,12 +29,7 @@
 - The new deployment workflow
 - Monitoring deployments
 
-
-ArgoCD watches your Git repo for manifest changes. When GitHub Actions updates the image tag in deployment.yaml and pushes that commit, ArgoCD detects the diff and automatically syncs the new deployment to your cluster. This is the GitOps pattern — Git is the single source of truth.
-
-You can push from anywhere — your laptop at a café, your office, anywhere with internet. ArgoCD on your cluster polls GitHub every 3 minutes (or you can configure a webhook for instant sync).
-
-### 0. Delete all application namespaces
+#### 0. Delete all application namespaces
 
 ```
 kubectl delete namespace public mcd perso hackaton techie
@@ -49,7 +50,7 @@ kubectl get namespaces
 kubectl apply -f infrastructure/namespaces.yaml
 ```
 
-### 1. Restructure the repository 
+#### 1. Restructure the repository 
 
 - The overall layout: 
 
@@ -126,7 +127,7 @@ onpremise-private-k3-cluster/
 │       └── ingress.yaml         # Routes mcd.devailab.work/* → services (auth required)
 ```
 
-### 2. Update deployment.yaml image references
+#### 2. Update deployment.yaml image references
 
 Every `deployment.yaml` currently references a **local image** name like `landing:latest`. You must change each one to its **GHCR equivalent**. 
 
@@ -154,7 +155,7 @@ spec:
         - name: ghcr-secret    # ← add this to every deployment
 ```
 
-### 3. Create the GitHub Actions workflow
+#### 3. Create the GitHub Actions workflow
 
 ```
 name: Build and deploy
