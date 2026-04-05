@@ -220,7 +220,6 @@ argocd login localhost:8080 `
 ```
 
 ▶️ Change the default password immediately
-
 ```
 argocd account update-password
 ```
