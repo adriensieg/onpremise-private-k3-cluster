@@ -152,6 +152,10 @@ spaces/public/apps/landing/k8s/deployment.yaml
 
 <mark>The workspace-appname prefix is important — it avoids name collisions in GHCR since all images live under the same account. </mark> `image: ghcr.io/adriensieg/<workspace>-<application>:latest`
 
+imagePullPolicy: Never must be `Always`
+
+Do the same `Never` → `Always` change in every other
+
 Also add imagePullSecrets to each deployment spec:
 
 ```
