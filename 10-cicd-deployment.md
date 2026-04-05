@@ -50,9 +50,19 @@ kubectl get namespaces
 kubectl apply -f infrastructure/namespaces.yaml
 ```
 
-#### 1. Restructure the repository 
+### Restructure the repository
 
-- The overall layout: 
+#### Create the new top-level folders
+
+Our repo currently has 
+- `infrastructure/`
+- `spaces/`
+
+We now need:
+- `.github`
+- `argocd`
+
+#### The overall layout: 
 
 ```
 onpremise-private-k3-cluster/
@@ -127,7 +137,7 @@ onpremise-private-k3-cluster/
 │       └── ingress.yaml         # Routes mcd.devailab.work/* → services (auth required)
 ```
 
-#### 2. Update deployment.yaml image references
+#### Update deployment.yaml image references
 
 Every `deployment.yaml` currently references a **local image** name like `landing:latest`. You must change each one to its **GHCR equivalent**. 
 
@@ -160,101 +170,62 @@ spec:
 Create `.github/workflows/deploy.yaml`
 
 ```
-name: Build and deploy
 
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'spaces/**/app/**'
-      - 'spaces/**/Dockerfile'
-
-jobs:
-  detect-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.build-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Build changed-app matrix
-        id: build-matrix
-        run: |
-          CHANGED=$(git diff --name-only HEAD~1 HEAD)
-          APPS="[]"
-
-          for WORKSPACE in public mcd perso hackaton techie; do
-            for APP_DIR in spaces/$WORKSPACE/apps/*/; do
-              [ -d "$APP_DIR" ] || continue
-              APP=$(basename "$APP_DIR")
-              if echo "$CHANGED" | grep -qE "^spaces/$WORKSPACE/apps/$APP/(app/|Dockerfile)"; then
-                ENTRY="{\"workspace\":\"$WORKSPACE\",\"app\":\"$APP\",\"image\":\"$WORKSPACE-$APP\"}"
-                APPS=$(echo "$APPS" | jq ". + [$ENTRY]")
-              fi
-            done
-          done
-
-          echo "matrix={\"include\":$(echo $APPS)}" >> $GITHUB_OUTPUT
-
-  build-and-push:
-    needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.matrix != '{"include":[]}' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
-    permissions:
-      contents: write
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push ARM64 image
-        uses: docker/build-push-action@v5
-        with:
-          context: spaces/${{ matrix.workspace }}/apps/${{ matrix.app }}
-          platforms: linux/arm64
-          push: true
-          tags: |
-            ghcr.io/adriensieg/${{ matrix.image }}:latest
-            ghcr.io/adriensieg/${{ matrix.image }}:${{ github.sha }}
-
-      - name: Update image tag in manifest
-        run: |
-          # Find the deployment yaml (handles both naming conventions)
-          MANIFEST=$(find spaces/${{ matrix.workspace }}/apps/${{ matrix.app }}/k8s/ \
-            -name "*deployment.yaml" | head -1)
-          
-          sed -i \
-            "s|image: ghcr.io/adriensieg/${{ matrix.image }}:.*|image: ghcr.io/adriensieg/${{ matrix.image }}:${{ github.sha }}|" \
-            "$MANIFEST"
-          
-          echo "Updated $MANIFEST"
-
-      - name: Commit updated manifest
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add spaces/${{ matrix.workspace }}/apps/${{ matrix.app }}/k8s/
-          git diff --staged --quiet || git commit -m \
-            "ci: ${{ matrix.workspace }}/${{ matrix.app }} → ${{ github.sha }}"
-          git push
 ```
+
+###  Install ArgoCD on the cluster (must be home)
+
+▶️ SSH into the control plane for these command - Install ArgoCD
+```
+# On your LOCAL machine (PowerShell) — opens SSH session
+ssh -i $HOME\.ssh\k3s-cluster adsieg@10.0.0.50
+
+# Now on the control plane node:
+kubectl create namespace argocd
+
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Wait for all pods to be ready (takes 2-3 minutes)
+kubectl wait --for=condition=Ready pod --all -n argocd --timeout=300s
+```
+
+▶️  Install the ArgoCD CLI on your local Windows machine
+```
+winget install ArgoProj.ArgoCD
+```
+
+▶️ Verify it works:
+```
+argocd version --client
+```
+
+▶️ Get the initial admin password
+```
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+▶️ Log in to ArgoCD from our local machine
+- Open a second PowerShell window (keep the SSH session open). Forward the ArgoCD port:
+```
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+- In a third PowerShell window, log in via CLI:
+
+```
+argocd login localhost:8080 `
+  --username admin `
+  --password <PASTE_PASSWORD_HERE> `
+  --insecure
+```
+
+▶️ Change the default password immediately
+
+```
+argocd account update-password
+```
+
+Configure GHCR access (must be home)
 
 # Architecture
 
