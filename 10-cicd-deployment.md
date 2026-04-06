@@ -139,24 +139,12 @@ onpremise-private-k3-cluster/
 
 #### Update deployment.yaml image references
 
-Every `deployment.yaml` currently references a **local image** name like `landing:latest`. You must change each one to its **GHCR equivalent**. 
+1. Every `deployment.yaml` currently references a **local image** name like `landing:latest`. You must change each one to its **GHCR equivalent**. `image: ghcr.io/adriensieg/public-landing:latest`
+2. <mark>The workspace-appname prefix is important — it avoids name collisions in GHCR since all images live under the same account. </mark> `image: ghcr.io/adriensieg/<workspace>-<application>:latest`
+3. `imagePullPolicy`: `Never` must be `Always`
+4. Also add `imagePullSecrets` to each deployment spec.
 
 <img width="70%" height="70%" alt="image" src="https://github.com/user-attachments/assets/b32948a2-29ef-4378-8b1d-0169f378c4b1" />
-
-
-For example: 
-```
-spaces/public/apps/landing/k8s/deployment.yaml
-  image: ghcr.io/adriensieg/public-landing:latest
-```
-
-<mark>The workspace-appname prefix is important — it avoids name collisions in GHCR since all images live under the same account. </mark> `image: ghcr.io/adriensieg/<workspace>-<application>:latest`
-
-imagePullPolicy: Never must be `Always`
-
-Do the same `Never` → `Always` change in every other
-
-Also add imagePullSecrets to each deployment spec:
 
 ```
 spec:
@@ -174,9 +162,13 @@ spec:
 
 Create `.github/workflows/deploy.yaml`
 
-```
+### 4. Create the ArgoCD Application manifests
 
-```
+Create **one file per workspace**. These tell ArgoCD **which folder to watch** and **which namespace to deploy into**.
+- `argocd/apps/public.yaml`
+- `argocd/apps/mcd.yaml`
+- `argocd/apps/perso.yaml`
+- ...
 
 ###  Install ArgoCD on the cluster (must be home)
 
@@ -235,6 +227,39 @@ argocd account update-password
 ### Configure GHCR access (must be home)
 
 #### Create a GitHub Personal Access Token
+
+Go to https://github.com/settings/tokens → "Generate new token (classic)".
+Settings:
+- Note: k3s-ghcr-pull
+- Expiration: No expiration (acceptable for a homelab read-only token)
+- Scope: check only read:packages
+
+
+#### Create the pull secret in every namespace
+Run this from our local PowerShell (kubectl must be configured, which it already is):
+
+```
+$PAT = "ghp_PASTE_YOUR_TOKEN_HERE"
+$USER = "adriensieg"
+$EMAIL = "adriensieg@hotmail.fr"
+
+foreach ($NS in @("public","perso")) {
+    kubectl create secret docker-registry ghcr-secret `
+      --docker-server=ghcr.io `
+      --docker-username=$USER `
+      --docker-password=$PAT `
+      --docker-email=$EMAIL `
+      -n $NS
+    Write-Host "Created ghcr-secret in namespace $NS"
+}
+```
+
+Verify:
+```
+foreach ($NS in @("public", "perso")) {
+    kubectl get secret ghcr-secret -n $NS
+}
+```
 
 # Architecture
 
