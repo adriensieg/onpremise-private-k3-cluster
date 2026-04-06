@@ -234,7 +234,6 @@ Settings:
 - Expiration: No expiration (acceptable for a homelab read-only token)
 - Scope: check only read:packages
 
-
 #### Create the pull secret in every namespace
 Run this from our local PowerShell (kubectl must be configured, which it already is):
 
@@ -260,6 +259,47 @@ foreach ($NS in @("public", "perso")) {
     kubectl get secret ghcr-secret -n $NS
 }
 ```
+
+### Connect ArgoCD to your GitHub repository (must be home)
+
+#### 1. Add the repo to ArgoCD
+Our repo is public, so no credentials are needed for ArgoCD to read it. 
+If we ever make it private, run this instead and use a PAT with repo scope:
+
+```
+# For a public repo — no auth needed:
+argocd repo add https://github.com/adriensieg/onpremise-private-k3-cluster-raspberry
+
+# For a private repo — use this instead:
+# argocd repo add https://github.com/adriensieg/onpremise-private-k3-cluster-raspberry `
+#   --username adriensieg `
+#   --password ghp_YOUR_PAT_WITH_REPO_SCOPE
+```
+
+#### 2. Apply the ArgoCD Application manifests
+
+This registers each workspace with ArgoCD so it starts watching our repo:
+```
+kubectl apply -f argocd/apps/public.yaml
+kubectl apply -f argocd/apps/perso.yaml
+```
+
+Check that ArgoCD sees them:
+```
+argocd app list
+```
+
+We should see all 5 apps listed with status Synced or OutOfSync. OutOfSync is normal at this point — it means the manifests in Git reference GHCR images that haven't been pushed yet.
+
+### Seed the registry with initial images (must be home)
+
+This is the one-time migration step. You need to push the current images to GHCR so ArgoCD has something real to deploy. After this, every future deploy is fully automated.
+
+```
+$PAT = "ghp_PASTE_YOUR_TOKEN_HERE"
+echo $PAT | docker login ghcr.io -u adriensieg --password-stdin
+```
+
 
 # Architecture
 
