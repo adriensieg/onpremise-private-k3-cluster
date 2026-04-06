@@ -24,19 +24,19 @@ You can push from anywhere — your laptop at a café, your office, anywhere wit
 - **Restructure our GitHub repository**: Our repo needs a clear separation between **app source code** and **Kubernetes manifests**. ArgoCD watches the manifests; GitHub Actions updates them.
 - **Configure GHCR access**: Our cluster needs credentials to **pull images from GHCR**. Create a **GitHub Personal Access Token (PAT)** with `read:packages` scope at `https://github.com/settings/tokens`. Then create the **pull secret in each namespace** that needs it. 
 - **GitHub Actions workflow**: Create `.github/workflows/deploy.yaml`. This workflow detects which app changed and only rebuilds that app.
-- **Configure ArgoCD Applications**: Create one ArgoCD Application resource per workspace. ArgoCD will watch that folder in our repo and keep the cluster in sync
-- **Repository secrets**: That's it. GITHUB_TOKEN is automatically injected by Actions and has write access to GHCR for your repo. No additional secrets needed for the basic flow.
-- The new deployment workflow
-- Monitoring deployments
+- **Configure ArgoCD Applications**: Create **one ArgoCD Application resource per workspace**. ArgoCD will watch that folder in our repo and **keep the cluster in sync**.
+- **Repository secrets**: That's it. `GITHUB_TOKEN` is automatically injected by **Actions** and has `write` access to **GHCR for our repo**. No additional secrets needed for the basic flow.
+- The **new deployment workflow**
+- **Monitoring deployments**
 
-#### 0. Delete all application namespaces
+### Delete all `application` namespaces
 
 ```
-kubectl delete namespace public mcd perso hackaton techie
+kubectl delete namespace public perso
 kubectl get namespaces -w
 ```
 
-- Verify infrastructure namespaces are intact
+- Verify infrastructure **namespaces are intact**
 
 ```
 kubectl get namespaces
@@ -115,7 +115,6 @@ onpremise-private-k3-cluster/
 ```
 
 - A private authenticated workspace must be organized in this way:
-
 ```
 ├── mcd/
 │   ├── auth/
@@ -139,13 +138,14 @@ onpremise-private-k3-cluster/
 
 #### Update deployment.yaml image references
 
-1. Every `deployment.yaml` currently references a **local image** name like `landing:latest`. You must change each one to its **GHCR equivalent**. `image: ghcr.io/adriensieg/public-landing:latest`
-2. <mark>The workspace-appname prefix is important — it avoids name collisions in GHCR since all images live under the same account. </mark> `image: ghcr.io/adriensieg/<workspace>-<application>:latest`
-3. `imagePullPolicy`: `Never` must be `Always`
+1. Every `deployment.yaml` currently references a **local image** name like `landing:latest`. We must change **each one** to its **GHCR equivalent**. `image: ghcr.io/adriensieg/public-landing:latest`
+2. <mark>The **workspace-appname prefix** is important — it avoids **name collisions** in GHCR since all images live under the same account. </mark> `image: ghcr.io/adriensieg/<workspace>-<application>:latest`
+3. `imagePullPolicy`: `Never` must be **`Always`**
 4. Also add `imagePullSecrets` to each deployment spec.
 
 <img width="70%" height="70%" alt="image" src="https://github.com/user-attachments/assets/b32948a2-29ef-4378-8b1d-0169f378c4b1" />
 
+Add secret to each deployment.
 ```
 spec:
   template:
